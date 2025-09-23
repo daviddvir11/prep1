@@ -1,19 +1,20 @@
+
+
 import logging
-from dotenv import load_dotenv
 import os
-
-
 for handler in logging.root.handlers[:]:
     logging.root.removeHandler(handler)
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s %(levelname)s %(message)s',
     handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler("test.log", mode="w")
+        logging.StreamHandler()
     ]
 )
-logging.info("Logging test: This should appear in test.log and console.")
+logging.info("Logging initialized: This should appear in test.log and console.")
+
+from dotenv import load_dotenv
+import os
 
 load_dotenv(dotenv_path="tests/.env.dev")
 LOGIN_USERNAME = os.getenv("LOGIN_USERNAME")

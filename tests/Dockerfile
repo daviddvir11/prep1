@@ -18,4 +18,6 @@ COPY tests/test_login.py /tests/
 
 RUN pip install --no-cache-dir selenium pytest webdriver-manager
 
-CMD ["pytest", "test_login.py"]
+COPY tests/entrypoint.sh /tests/entrypoint.sh
+RUN chmod +x /tests/entrypoint.sh
+CMD ["/tests/entrypoint.sh"]
