@@ -48,7 +48,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
 
-
+#new
 logging.info("Test script started")
 
 class BasePage:
