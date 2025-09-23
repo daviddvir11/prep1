@@ -1,0 +1,18 @@
+2025-09-22 18:51:52,357 INFO Logging test: This should appear in test.log and console.
+2025-09-22 18:51:52,357 INFO Test script started
+2025-09-22 18:51:52,615 INFO Test script started
+2025-09-22 18:51:52,615 INFO Launching browser...
+2025-09-22 18:51:52,615 INFO ====== WebDriver manager ======
+2025-09-22 18:51:53,505 INFO Get LATEST chromedriver version for google-chrome
+2025-09-22 18:51:54,035 INFO Get LATEST chromedriver version for google-chrome
+2025-09-22 18:51:54,575 INFO Driver [C:\Users\dvir_davi\.wdm\drivers\chromedriver\win64\140.0.7339.185\chromedriver-win32/chromedriver.exe] found in cache
+2025-09-22 18:51:56,065 INFO Element is visible: ('id', 'username')
+2025-09-22 18:51:56,142 INFO Entered username: [HIDDEN]
+2025-09-22 18:51:56,158 INFO Element is visible: ('id', 'password')
+2025-09-22 18:51:56,215 INFO Entered password: [HIDDEN]
+2025-09-22 18:51:59,307 INFO Element is clickable: ('id', 'loginBtn')
+2025-09-22 18:51:59,365 INFO Clicked login button
+2025-09-22 18:51:59,395 INFO Element is visible: ('xpath', "//h1[contains(text(), 'Welcome')]")
+2025-09-22 18:51:59,414 INFO Element is visible: ('id', 'loggedInBtn')
+2025-09-22 18:51:59,414 INFO Verified dashboard page
+2025-09-22 18:51:59,415 INFO Closing browser...

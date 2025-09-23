@@ -1,0 +1,192 @@
+<!doctype html>
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Login</title>
+  <style>
+    body {
+      background: linear-gradient(120deg, #f0f4f8 0%, #cfd9df 100%);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .login-container {
+      background: #fff;
+      padding: 32px 28px 24px 28px;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      width: 350px;
+      max-width: 90vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      margin-bottom: 18px;
+      color: #2d3a4b;
+      font-size: 2rem;
+      font-weight: 600;
+    }
+    input[type="text"], input[type="password"], input[type="checkbox"], input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0 12px 0;
+      border: 1px solid #cfd9df;
+      border-radius: 6px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    label {
+      color: #2d3a4b;
+      font-size: 1rem;
+      margin-bottom: 4px;
+      display: block;
+    }
+    #loginBtn {
+      background: #4f8cff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 0;
+      font-size: 1.1rem;
+      font-weight: 500;
+      width: 100%;
+      margin-top: 10px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(79,140,255,0.08);
+      transition: background 0.2s;
+      display: none;
+    }
+    #loginBtn:hover {
+      background: #357ae8;
+    }
+    #errorMsg {
+      color: #fff;
+      background: #e74c3c;
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      width: 100%;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.05em;
+      box-shadow: 0 2px 8px rgba(231,76,60,0.08);
+      display: none;
+      letter-spacing: 0.5px;
+    }
+    .captcha-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      width: 100%;
+    }
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>Login</h1>
+  <div id="usernameError" style="color:#e74c3c; font-size:0.95em; margin-bottom:4px; display:none;"></div>
+  <div id="passwordError" style="color:#e74c3c; font-size:0.95em; margin-bottom:4px; display:none;"></div>
+  <div id="captchaError" style="color:#e74c3c; font-size:0.95em; margin-bottom:4px; display:none;"></div>
+    <div id="serverError" style="color:#e74c3c; font-size:0.95em; margin-bottom:8px; display:none;"></div>
+    <form id="loginForm" action="/login" method="post" autocomplete="off">
+      <label for="username">Username
+        <span title="Enter your username. Example: user, admin, guest" style="cursor:help; color:#888;">&#9432;</span>
+      </label>
+  <input id="username" name="username" placeholder="Username" required>
+      <label for="password">Password
+        <span title="Enter your password. Example: user, admin, guest" style="cursor:help; color:#888;">&#9432;</span>
+      </label>
+  <input id="password" type="password" name="password" placeholder="Password" required>
+      <div class="checkbox-row">
+        <input type="checkbox" id="showPassword">
+        <label for="showPassword" style="margin-bottom:0;">Show Password</label>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="rememberMe" name="rememberMe">
+        <label for="rememberMe" style="margin-bottom:0;">Remember Me</label>
+      </div>
+      <div class="captcha-row" style="display:none;">
+        <label for="captcha">What is <span id="captchaQ"></span>?</label>
+        <input id="captcha" name="captcha" style="width:60px;">
+      </div>
+      <button id="loginBtn">Login</button>
+    </form>
+    <div style="margin-top:18px; width:100%; text-align:left;">
+      <strong>Sample Credentials:</strong>
+      <ul style="margin:8px 0 0 16px; padding:0; color:#555; font-size:0.95em;">
+        <li>user / user</li>
+        <li>admin / admin</li>
+        <li>guest / guest</li>
+      </ul>
+    </div>
+    <div style="margin-top:18px; width:100%; text-align:left;">
+  <a href="/forgot-password" id="forgotLink" style="margin-right:16px; color:#4f8cff; text-decoration:none;">Forgot Password?</a>
+  <a href="/signup" id="signupLink" style="margin-right:16px; color:#4f8cff; text-decoration:none;">Sign Up</a>
+  <a href="/help" id="helpLink" style="color:#4f8cff; text-decoration:none;">Help</a>
+    </div>
+    <footer style="margin-top:32px; color:#aaa; font-size:0.9em; text-align:center; width:100%;">
+      <a href="#" id="privacyLink" style="color:#aaa; text-decoration:underline;">Privacy Policy</a> &middot; &copy; 2025 Minimal App
+    </footer>
+  </div>
+  <script>
+  window.onload = () => {
+    setTimeout(() => document.getElementById("loginBtn").style.display="block", 3000);
+    const params = new URLSearchParams(location.search);
+    const error = params.get('error');
+    if (error) {
+      document.getElementById('serverError').textContent = error;
+      document.getElementById('serverError').style.display = 'block';
+    }
+
+    // Password visibility toggle
+    document.getElementById('showPassword').addEventListener('change', function() {
+      document.getElementById('password').type = this.checked ? 'text' : 'password';
+    });
+
+    // CAPTCHA simulation
+    const a = Math.floor(Math.random() * 10) + 1;
+    const b = Math.floor(Math.random() * 10) + 1;
+    document.getElementById('captchaQ').textContent = `${a} + ${b}`;
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      let valid = true;
+      // Reset errors
+      document.getElementById('usernameError').style.display = 'none';
+      document.getElementById('passwordError').style.display = 'none';
+
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (username.length < 3) {
+        document.getElementById('usernameError').textContent = 'Username must be at least 3 characters.';
+        document.getElementById('usernameError').style.display = 'block';
+        valid = false;
+      }
+      if (password.length < 3) {
+        document.getElementById('passwordError').textContent = 'Password must be at least 3 characters.';
+        document.getElementById('passwordError').style.display = 'block';
+        valid = false;
+      }
+      if (!valid) {
+        e.preventDefault();
+      }
+    });
+  };
+
+  // Removed modal popup function
+  </script>
+</body>
+</html>
