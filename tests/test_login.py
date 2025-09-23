@@ -138,20 +138,25 @@ def driver(request):
     options = webdriver.ChromeOptions()
     # Detect if running inside Docker container
     in_docker = os.path.exists('/.dockerenv') or os.environ.get('RUNNING_IN_DOCKER') == '1'
+    user_data_dir = None
     if in_docker:
         options.add_argument("--headless=new")
         options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
         options.add_argument("--window-size=1920,1080")
         options.add_argument("--disable-dev-shm-usage")
-    # Removed --user-data-dir for CI/CD and container compatibility
+        import tempfile, shutil
+        user_data_dir = tempfile.mkdtemp()
+        options.add_argument(f"--user-data-dir={user_data_dir}")
     browser = webdriver.Chrome(service=service, options=options)
     browser.implicitly_wait(10)
     request.cls.driver = browser
     yield browser
     logging.info("Closing browser...")
     browser.quit()
-    # Ensure all logging handlers are flushed and closed so test.log is written
+    if user_data_dir:
+        import shutil
+        shutil.rmtree(user_data_dir, ignore_errors=True)
     for handler in logging.getLogger().handlers:
         handler.flush()
         handler.close()
