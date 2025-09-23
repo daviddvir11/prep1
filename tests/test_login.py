@@ -144,8 +144,7 @@ def driver(request):
         options.add_argument("--no-sandbox")
         options.add_argument("--window-size=1920,1080")
         options.add_argument("--disable-dev-shm-usage")
-    user_data_dir = tempfile.mkdtemp()
-    options.add_argument(f"--user-data-dir={user_data_dir}")
+    # Removed --user-data-dir for CI/CD and container compatibility
     browser = webdriver.Chrome(service=service, options=options)
     browser.implicitly_wait(10)
     request.cls.driver = browser
@@ -189,7 +188,3 @@ class TestLoginPage:
         login_page.click_login_button()
         dashboard_page.verify_logged_in()
 
-# SECURITY NOTE:
-# - .env.dev is in .gitignore and should NOT be pushed to GitHub.
-# - Never log or expose credentials in code or logs.
-# - Review code for secrets before pushing to public repositories.
