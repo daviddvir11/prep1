@@ -6,9 +6,7 @@ for handler in logging.root.handlers[:]:
     logging.root.removeHandler(handler)
 logging.basicConfig(
     level=logging.INFO,
-    fo        logging.info("Running Chrome in headless mode (CI/CD or Docker detected)")
-    else:
-        logging.info("Running Chrome with UI (local execution)")t='%(asctime)s %(levelname)s %(message)s',
+    format='%(asctime)s %(levelname)s %(message)s',
     handlers=[
         logging.StreamHandler()
     ]
