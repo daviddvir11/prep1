@@ -138,22 +138,32 @@ def driver(request):
     options = webdriver.ChromeOptions()
     # Detect if running inside Docker container
     in_docker = os.path.exists('/.dockerenv') or os.environ.get('RUNNING_IN_DOCKER') == '1'
-    import tempfile, shutil
-    user_data_dir = tempfile.mkdtemp()
-    options.add_argument(f"--user-data-dir={user_data_dir}")
+    # Add recommended Chrome options for CI/CD isolation
+    chrome_args = [
+        "--disable-extensions",
+        "--disable-background-networking",
+        "--disable-sync",
+        "--disable-default-apps",
+        "--no-first-run",
+        "--no-default-browser-check",
+        "--disable-component-extensions-with-background-pages"
+    ]
     if in_docker:
-        options.add_argument("--headless=new")
-        options.add_argument("--disable-gpu")
-        options.add_argument("--no-sandbox")
-        options.add_argument("--window-size=1920,1080")
-        options.add_argument("--disable-dev-shm-usage")
+        chrome_args += [
+            "--headless=new",
+            "--disable-gpu",
+            "--no-sandbox",
+            "--window-size=1920,1080",
+            "--disable-dev-shm-usage"
+        ]
+    for arg in chrome_args:
+        options.add_argument(arg)
     browser = webdriver.Chrome(service=service, options=options)
     browser.implicitly_wait(10)
     request.cls.driver = browser
     yield browser
     logging.info("Closing browser...")
     browser.quit()
-    shutil.rmtree(user_data_dir, ignore_errors=True)
     for handler in logging.getLogger().handlers:
         handler.flush()
         handler.close()
