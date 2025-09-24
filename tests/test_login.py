@@ -6,7 +6,9 @@ for handler in logging.root.handlers[:]:
     logging.root.removeHandler(handler)
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s %(levelname)s %(message)s',
+    fo        logging.info("Running Chrome in headless mode (CI/CD or Docker detected)")
+    else:
+        logging.info("Running Chrome with UI (local execution)")t='%(asctime)s %(levelname)s %(message)s',
     handlers=[
         logging.StreamHandler()
     ]
@@ -136,10 +138,14 @@ def driver(request):
     logging.info("Launching browser...")
     service = Service(ChromeDriverManager().install())
     options = webdriver.ChromeOptions()
-    # Detect if running inside Docker container
+    # Detect if running in CI/CD or Docker container (headless mode)
+    in_ci = os.environ.get('CI') == 'true' or os.environ.get('GITHUB_ACTIONS') == 'true'
     in_docker = os.path.exists('/.dockerenv') or os.environ.get('RUNNING_IN_DOCKER') == '1'
-    import tempfile, shutil
+    is_headless = in_ci or in_docker  # Run headless in CI/CD or Docker
+    
+    import tempfile, shutil, random
     user_data_dir = tempfile.mkdtemp()
+    debug_port = random.randint(9000, 9999)  # Random port to avoid conflicts
     chrome_args = [
         f"--user-data-dir={user_data_dir}",
         "--disable-extensions",
@@ -149,9 +155,11 @@ def driver(request):
         "--no-first-run",
         "--no-default-browser-check",
         "--disable-component-extensions-with-background-pages",
-        "--remote-debugging-port=9222"
+        f"--remote-debugging-port={debug_port}"
     ]
-    if in_docker:
+    
+    # Add headless options only for CI/CD or Docker
+    if is_headless:
         chrome_args += [
             "--headless=new",
             "--disable-gpu",
@@ -159,6 +167,9 @@ def driver(request):
             "--window-size=1920,1080",
             "--disable-dev-shm-usage"
         ]
+        logging.info("Running Chrome in headless mode (CI/CD or Docker detected)")
+    else:
+        logging.info("Running Chrome with UI (local execution)")
     for arg in chrome_args:
         options.add_argument(arg)
     browser = webdriver.Chrome(service=service, options=options)
