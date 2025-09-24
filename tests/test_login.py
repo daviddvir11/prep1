@@ -138,15 +138,18 @@ def driver(request):
     options = webdriver.ChromeOptions()
     # Detect if running inside Docker container
     in_docker = os.path.exists('/.dockerenv') or os.environ.get('RUNNING_IN_DOCKER') == '1'
-    # Add recommended Chrome options for CI/CD isolation
+    import tempfile, shutil
+    user_data_dir = tempfile.mkdtemp()
     chrome_args = [
+        f"--user-data-dir={user_data_dir}",
         "--disable-extensions",
         "--disable-background-networking",
         "--disable-sync",
         "--disable-default-apps",
         "--no-first-run",
         "--no-default-browser-check",
-        "--disable-component-extensions-with-background-pages"
+        "--disable-component-extensions-with-background-pages",
+        "--remote-debugging-port=9222"
     ]
     if in_docker:
         chrome_args += [
@@ -164,6 +167,7 @@ def driver(request):
     yield browser
     logging.info("Closing browser...")
     browser.quit()
+    shutil.rmtree(user_data_dir, ignore_errors=True)
     for handler in logging.getLogger().handlers:
         handler.flush()
         handler.close()
