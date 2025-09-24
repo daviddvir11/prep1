@@ -138,6 +138,9 @@ def driver(request):
     options = webdriver.ChromeOptions()
     # Detect if running inside Docker container
     in_docker = os.path.exists('/.dockerenv') or os.environ.get('RUNNING_IN_DOCKER') == '1'
+    import tempfile, shutil
+    user_data_dir = tempfile.mkdtemp()
+    options.add_argument(f"--user-data-dir={user_data_dir}")
     if in_docker:
         options.add_argument("--headless=new")
         options.add_argument("--disable-gpu")
@@ -150,6 +153,7 @@ def driver(request):
     yield browser
     logging.info("Closing browser...")
     browser.quit()
+    shutil.rmtree(user_data_dir, ignore_errors=True)
     for handler in logging.getLogger().handlers:
         handler.flush()
         handler.close()
