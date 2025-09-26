@@ -26,6 +26,7 @@ if not LOGIN_PASSWORD:
 
 logging.info("Test script started")
 import pytest
+#hello
 
 # --- Pytest hook to flush/close logging handlers after all tests ---
 def pytest_sessionfinish(session, exitstatus):
