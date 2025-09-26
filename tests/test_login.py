@@ -197,12 +197,16 @@ class TestLoginPage:
         raise RuntimeError(f"App not available at {url}")
 
     def test_login_page(self):
-        # Detect if running inside Docker container
+        # Detect environment and set appropriate URL
+        in_ci = os.environ.get('CI') == 'true' or os.environ.get('GITHUB_ACTIONS') == 'true'
         in_docker = os.path.exists('/.dockerenv') or os.environ.get('RUNNING_IN_DOCKER') == '1'
-        if in_docker:
-            app_url = "http://host.docker.internal:5000/"
+        
+        if in_ci:
+            app_url = "https://minimum-app.onrender.com/"  # Production URL for CI
+        elif in_docker:
+            app_url = "http://host.docker.internal:5000/"  # Docker connecting to host
         else:
-            app_url = "http://localhost:5000/"
+            app_url = "http://localhost:5000/"  # Local development
         self.wait_for_app(app_url)
         self.driver.get(app_url)
         login_page = LoginPage(self.driver)

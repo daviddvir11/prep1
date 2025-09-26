@@ -9,6 +9,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 10  # Faster since testing against production
 
     steps:
     - name: Checkout code
@@ -34,7 +35,7 @@ jobs:
         sudo pkill -f chrome || true
         sudo pkill -f chromedriver || true
 
-    - name: Run tests
+    - name: Run tests against production
       env:
         LOGIN_USERNAME: ${{ secrets.LOGIN_USERNAME }}
         LOGIN_PASSWORD: ${{ secrets.LOGIN_PASSWORD }}
